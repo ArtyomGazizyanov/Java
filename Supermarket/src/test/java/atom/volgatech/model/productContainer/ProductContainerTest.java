@@ -1,6 +1,7 @@
 package atom.volgatech.model.productContainer;
 
 import atom.volgatech.model.product.Product;
+import atom.volgatech.model.product_container.ProductContainer;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -36,7 +36,7 @@ public class SupermarketSimulation {
 
         Runnable consumer = new Consumer(bq, executor);
         executor.execute(consumer);
-
+        //сделать event у producer сщтыгьук
         while(!executor.isShutdown()){}
         isFinished = true;
     }

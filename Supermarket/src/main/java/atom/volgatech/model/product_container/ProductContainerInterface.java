@@ -1,4 +1,4 @@
-package atom.volgatech.model.productContainer;
+package atom.volgatech.model.product_container;
 
 import atom.volgatech.model.product.Product;
 

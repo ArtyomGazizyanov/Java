@@ -6,7 +6,7 @@ import atom.volgatech.model.report.PeriodReport;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Report {
+public class Report implements ReportInterface {
     public Report() {
     }
 

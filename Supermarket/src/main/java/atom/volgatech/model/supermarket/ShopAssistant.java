@@ -7,7 +7,7 @@ public class ShopAssistant {
     ShopAssistant() {
     }
 
-    public static boolean isCustomerAbleToBuyProduct(Customer.CustomerKind customerKind, Product product) {
+    public static boolean isNotChild(Customer.CustomerKind customerKind, Product product) {
         switch (product.getType()) {
             case Alcohol:
             case Cigarettes:

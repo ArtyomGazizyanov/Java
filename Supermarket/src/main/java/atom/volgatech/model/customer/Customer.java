@@ -43,7 +43,7 @@ public class Customer implements CustomerInterfce {
             Integer rndPrintNumberOfProductToChoose = choosenProductRnd.nextInt(availableProduct.size());
             Product choosenProduct = availableProduct.get(rndPrintNumberOfProductToChoose);
 
-            if(!ShopAssistant.isCustomerAbleToBuyProduct(_kind, choosenProduct)) {
+            if(!ShopAssistant.isNotChild(_kind, choosenProduct)) {
                 System.out.printf("`Customer %1s` being a child tried to pick up %-20s: %1s\n", _id, choosenProduct.getKind().toString(), PrintService.getTimeAndUpdate());
                 continue;
             }
