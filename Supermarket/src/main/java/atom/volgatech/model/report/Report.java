@@ -13,7 +13,7 @@ public class Report implements ReportInterface {
     public static Map<Product, Integer> todayProductList =
             new HashMap<Product, Integer>();
 
-    public static Map<Product, Integer> leftProductsList =
+        public static Map<Product, Integer> leftProductsList =
             new HashMap<Product, Integer>();
 
     public void increaseCustomersAmount()

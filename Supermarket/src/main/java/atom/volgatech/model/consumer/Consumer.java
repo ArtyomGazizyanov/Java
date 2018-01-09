@@ -30,21 +30,6 @@ public class Consumer implements Runnable{
                 SupermarketSimulation._semaphoreTodayReport.release();
             } catch (InterruptedException ie) {
             }
-        } while (!SupermarketSimulation.IsWorkingDayEnd());
-
-        try{
-            executor.shutdown();
-            executor.awaitTermination(5, TimeUnit.SECONDS);
-        }
-        catch (InterruptedException e) {
-            System.err.println("tasks interrupted");
-        }
-        finally {
-            if (!executor.isTerminated()) {
-                System.err.println("cancel non-finished tasks");
-            }
-            queue.clear();
-            executor.shutdownNow();
-        }
+        } while (!queue.isEmpty());
     }
 }

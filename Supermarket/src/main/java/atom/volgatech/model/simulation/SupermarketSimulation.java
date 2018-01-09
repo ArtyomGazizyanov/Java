@@ -31,14 +31,54 @@ public class SupermarketSimulation {
         final BlockingQueue<Customer> bq = new ArrayBlockingQueue<Customer>(_maxCustomerQueue);
         final ExecutorService executor = Executors.newFixedThreadPool(_threadCapacity);
 
-        Runnable producer = new Producer(bq);
-        executor.execute(producer);
+        Random randomAmountOfCustomers = new Random();
+        while(!SupermarketSimulation.IsWorkingDayEnd())
+        {
+            Integer newCustomersAmount = randomAmountOfCustomers.nextInt(SupermarketSimulation.getMaxAmmountOfCustomers());
+            System.out.println(newCustomersAmount + " Customers arriving at the doors!: " + PrintService.getTimeAndUpdate());
 
+            for(byte i = 0; i < newCustomersAmount; ++i) {
+                Runnable producer = new Producer(bq);
+                executor.execute(producer);
+            }
+            TimeUnit.MILLISECONDS.sleep(10);
+        }
+
+        Integer cashDeskAmount = 2;
         Runnable consumer = new Consumer(bq, executor);
         executor.execute(consumer);
+        executor.execute(consumer);
+        while(!bq.isEmpty()){
+            if(isAvailableQueeLength(cashDeskAmount, bq)){
+                cashDeskAmount++;
+                executor.execute(consumer);
+            }
+        }
+        shutDownExecutor(executor, bq);
         //сделать event у producer сщтыгьук
         while(!executor.isShutdown()){}
         isFinished = true;
+    }
+
+    public boolean isAvailableQueeLength(int actualQueueLength, BlockingQueue<Customer> bq){
+        return (bq.size() / actualQueueLength) > _maxAmountOfCustomersInCashDeskQueue;
+    }
+
+    public void shutDownExecutor(ExecutorService executor, BlockingQueue<Customer> bq){
+        try{
+            executor.shutdown();
+            executor.awaitTermination(100, TimeUnit.MILLISECONDS);
+        }
+        catch (InterruptedException e) {
+            System.err.println("tasks interrupted");
+        }
+        finally {
+            if (!executor.isTerminated()) {
+                System.err.println("cancel non-finished tasks");
+            }
+            bq.clear();
+            executor.shutdownNow();
+        }
     }
 
     public static PaymentMethod generatePaymentMethod()
@@ -155,6 +195,7 @@ public class SupermarketSimulation {
     private static double _workingDayInHours = 2;
     private static double _workingPeriod = 0;
     private static Integer _maxAmountOfCustomers = 5;
+    private static Integer _maxAmountOfCustomersInCashDeskQueue = 10;
     private Supermarket _supermarket;
 
     private static boolean isFinished = false;
