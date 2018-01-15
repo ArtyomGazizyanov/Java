@@ -14,7 +14,6 @@ public class PrintService {
     static private double _time = 0;
     static private long MillsInMinute = 3600000;
     static private double passedHours = 0;
-    static private Integer  printedMessageinPeriodAmmount = 0;
 
     static public void setUp(String startSupermarketTime) throws ParseException {
 
@@ -30,6 +29,18 @@ public class PrintService {
         long time = timeConst.getTime();
         Date currentDate = new Date((long) (time + ( passedHours * MillsInMinute)));
         _currTime = _timeFormat.format(currentDate);
+    }
+
+    public static String getTimefromDouble(double hours) {
+        Date timeConst = null;
+        try {
+            timeConst = _timeFormat.parse(_startTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long time = timeConst.getTime();
+        Date currentDate = new Date((long) (time + ( hours * MillsInMinute)));
+        return _timeFormat.format(currentDate);
     }
 
     static public String getTimeAndUpdate(){

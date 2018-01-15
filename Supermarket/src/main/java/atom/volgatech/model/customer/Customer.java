@@ -24,6 +24,10 @@ public class Customer implements CustomerInterfce {
         _paymentMethod = paymentMethod.getPaymentMethod();
     }
 
+    public void setTime(double time) {
+        _myTime = time;
+    }
+
     public Basket getBasket() {
         return _basket;
     }
@@ -45,11 +49,11 @@ public class Customer implements CustomerInterfce {
             Product choosenProduct = availableProduct.get(rndPrintNumberOfProductToChoose);
 
             if(!ShopAssistant.isNotChild(_kind, choosenProduct)) {
-                System.out.printf("`Customer %1s` being a child tried to pick up %-20s: %1s\n", _id, choosenProduct.getKind().toString(), PrintService.getTimeAndUpdate());
+                System.out.printf("`Customer %1s` being a child tried to pick up %-20s\n", _id, choosenProduct.getKind().toString());
                 continue;
             }
 
-            System.out.printf("`Customer%1s` picked up %-20s: %1s\n", _id, choosenProduct.getKind().toString(), PrintService.getTimeAndUpdate());
+            System.out.printf("`Customer%1s` picked up %-20s\n", _id, choosenProduct.getKind().toString());
             pickUpProduct(choosenProduct);
             _basket.addItem(choosenProduct);
         }
@@ -103,4 +107,5 @@ public class Customer implements CustomerInterfce {
     private Integer _id;
     private PaymentMethod.Method _paymentMethod;
     private Map<Product, Integer> _goodsStock;
+    private double _myTime;
 }

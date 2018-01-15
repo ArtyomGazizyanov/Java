@@ -26,9 +26,9 @@ public class Producer implements Runnable{
                 customer.getProducts();
 
                 if (!customer.getBasket().isEmpty()) {
-                    System.out.printf("Customer `Customer %1s` had finished product choosing, now waiting at cash desk: %1s\n\n", customer.getId(), PrintService.getTimeAndUpdate());
+                    System.out.printf("Customer `Customer %1s` had finished product choosing, now waiting at cash desk\n\n", customer.getId());
                 } else {
-                    System.out.printf("Customer `Customer %1s` hadn`t choose anything: %1s\n\n", customer.getId(), PrintService.getTimeAndUpdate());
+                    System.out.printf("Customer `Customer %1s` hadn`t choose anything\n\n", customer.getId());
                 }
 
                 try {

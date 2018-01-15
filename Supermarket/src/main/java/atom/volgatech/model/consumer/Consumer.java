@@ -29,6 +29,7 @@ public class Consumer implements Runnable{
                     SupermarketSimulation.gettodayReport().updateTodaySum(cashDesk.getPeriodReport());
                 }
             } catch (InterruptedException ie) {
+                ie.printStackTrace();
             }
         } while (!queue.isEmpty());
     }

@@ -18,29 +18,6 @@ public class CashDesk implements CashDeskInterface {
         _periodReport = new PeriodReport();
     }
 
-   /* public void processQueue() {
-        if (!_customersQueue.isEmpty()) {
-
-            PrintStartCashDeskProcss();
-
-            for (Customer customer : _customersQueue) {
-                if (customer.isChooseSomething()) {
-
-                    Bill bill = new Bill();
-                    bill.addToCheque(calculateCustomersBasket(customer, new HashSet<CustomerKind>(){{add(Customer.CustomerKind.Adult);}}));
-
-                    if (!bill.isEmpty()) {
-                        _periodReport.add(bill.getBill());
-                        System.out.printf("Customer 'Customer%1d' paid %.2f by %1s : %1s\n\n", customer.getId(), bill.getBill(), customer.getPaymentMethod().toString(), PrintService.getTimeAndUpdate());
-                    }
-                } else {
-                    System.out.printf("Customer 'Customer%1d' choose nothing and just left the doors : %1s\n\n", customer.getId(), PrintService.getTimeAndUpdate());
-                }
-            }
-            PrintCashDeskDelimiter();
-        }
-    }*/
-
     public void processPoolQueue(Customer customer) {
         PrintStartCashDeskProcss();
         if (customer.isChooseSomething()) {
@@ -50,10 +27,10 @@ public class CashDesk implements CashDeskInterface {
 
             if (!bill.isEmpty()) {
                 _periodReport.add(bill.getBill());
-                System.out.printf("Customer 'Customer%1d' paid %.2f by %1s : %1s\n\n", customer.getId(), bill.getBill(), customer.getPaymentMethod().toString(), PrintService.getTimeAndUpdate());
+                System.out.printf("Customer 'Customer%1d' paid %.2f by %1s\n\n", customer.getId(), bill.getBill(), customer.getPaymentMethod().toString());
             }
         } else {
-            System.out.printf("Customer 'Customer%1d' choose nothing and just left the doors : %1s\n\n", customer.getId(), PrintService.getTimeAndUpdate());
+            System.out.printf("Customer 'Customer%1d' choose nothing and just left the doors\n\n", customer.getId());
         }
         PrintCashDeskDelimiter();
     }
@@ -61,10 +38,6 @@ public class CashDesk implements CashDeskInterface {
     public PeriodReport getPeriodReport() {
         return _periodReport;
     }
-
-    /*public void addCustomerToQueue(Customer customer) {
-        _customersQueue.add(customer);
-    }*/
 
     private double calculateCustomersBasket(Customer customer, HashSet<CustomerKind> discountTypes) {
         Basket basket = customer.getBasket();
@@ -76,8 +49,8 @@ public class CashDesk implements CashDeskInterface {
             double price = entry.getKey().getCost();
             if (entry.getKey().hasDiscount()) {
                 if (discountTypes.contains(customer.getKind())) {
-                    System.out.printf("Adult customer %1s a discount for %.2f %% for %1s: %1s\n", customer.getId(),
-                            1 - entry.getKey().getDiscount(), entry.getKey().getKind(), PrintService.getTimeAndUpdate());
+                    System.out.printf("Adult customer %1s a discount for %.2f %% for %1s\n", customer.getId(),
+                            1 - entry.getKey().getDiscount(), entry.getKey().getKind());
                     price *= (1 - entry.getKey().getDiscount());
                 }
             }

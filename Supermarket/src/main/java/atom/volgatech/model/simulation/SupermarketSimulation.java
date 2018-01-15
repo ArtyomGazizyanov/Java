@@ -45,7 +45,7 @@ public class SupermarketSimulation {
             executor.execute(consumer);
             increaseWorkingDayTime(5);
         }
-        shutDownExecutor(executor, bq);
+        shutDownExecutorWithReturnedProducts(executor, bq);
         //while(!executor.isShutdown()) {}
 
         isFinished = true;
@@ -55,7 +55,8 @@ public class SupermarketSimulation {
         return actualQueueLength > 0 && (bq.size() / actualQueueLength) > _maxAmountOfCustomersInCashDeskQueue;
     }
 
-    public void shutDownExecutor(ExecutorService executor, BlockingQueue<Customer> bq){
+    public boolean shutDownExecutorWithReturnedProducts(ExecutorService executor, BlockingQueue<Customer> bq){
+        boolean hasReturnedProducts = false;
         executor.shutdown();
         try{
             executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
@@ -67,6 +68,7 @@ public class SupermarketSimulation {
             for (Customer customer : bq) {
                 customer.returnProducts();
                 System.out.printf("Customer # %d returned all products and left the doors\n", customer.getId());
+                hasReturnedProducts = true;
             }
         }
         catch (InterruptedException e) {
@@ -78,6 +80,7 @@ public class SupermarketSimulation {
             }
             bq.clear();
             executor.shutdownNow();
+            return hasReturnedProducts;
         }
     }
 
@@ -110,7 +113,9 @@ public class SupermarketSimulation {
 
     public static Customer EnterCustomer(Integer customerId) {
         _todayReport.increaseCustomersAmount();
-        return new Customer(SupermarketSimulation.generateCustomerKind(), _todayReport.leftProductsList, customerId, generatePaymentMethod());
+        Customer customer = new Customer(SupermarketSimulation.generateCustomerKind(), _todayReport.leftProductsList, customerId, generatePaymentMethod());
+        customer.setTime(_workingPeriod);
+        return customer;
     }
 
     public static Customer.CustomerKind generateCustomerKind() {
