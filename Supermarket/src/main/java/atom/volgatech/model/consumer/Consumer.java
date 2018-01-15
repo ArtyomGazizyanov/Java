@@ -24,10 +24,10 @@ public class Consumer implements Runnable{
         do {
             try {
                 customer = queue.take();
-                SupermarketSimulation._semaphoreTodayReport.acquire();
-                cashDesk.processPoolQueue(customer);
-                SupermarketSimulation.gettodayReport().updateTodaySum(cashDesk.getPeriodReport());
-                SupermarketSimulation._semaphoreTodayReport.release();
+                synchronized (SupermarketSimulation.gettodayReport()) {
+                    cashDesk.processPoolQueue(customer);
+                    SupermarketSimulation.gettodayReport().updateTodaySum(cashDesk.getPeriodReport());
+                }
             } catch (InterruptedException ie) {
             }
         } while (!queue.isEmpty());

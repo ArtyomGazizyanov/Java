@@ -12,7 +12,7 @@ public class Main {
             SupermarketSimulation supermarketSimulation = new SupermarketSimulation(supermarket);
             supermarketSimulation.processCustomersPool();
             if (supermarketSimulation.isIsFinished()) {
-                supermarketSimulation.getReport();
+                 supermarketSimulation.getReport();
             }
         } catch (Exception e)
         {

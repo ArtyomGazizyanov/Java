@@ -27,44 +27,38 @@ public class SupermarketSimulation {
         }
     }
 
-    public void processCustomersPool() throws InterruptedException {
+    public void processCustomersPool() throws InterruptedException, ParseException {
         final BlockingQueue<Customer> bq = new ArrayBlockingQueue<Customer>(_maxCustomerQueue);
         final ExecutorService executor = Executors.newFixedThreadPool(_threadCapacity);
-
+        int cashDeskAmount = 0;
         Random randomAmountOfCustomers = new Random();
+        Runnable consumer = new Consumer(bq, executor);
+        Runnable producer = new Producer(bq);
         while(!SupermarketSimulation.IsWorkingDayEnd()) {
 
-            Integer newCustomersAmount = randomAmountOfCustomers.nextInt(SupermarketSimulation.getMaxAmmountOfCustomers());
+            Integer newCustomersAmount = randomAmountOfCustomers.nextInt(SupermarketSimulation.getMaxAmmountOfCustomers());;
             System.out.println(newCustomersAmount + " Customers arriving at the doors!: " + PrintService.getTimeAndUpdate());
 
             for(byte i = 0; i < newCustomersAmount; ++i) {
-                Runnable producer = new Producer(bq);
                 executor.execute(producer);
             }
-            TimeUnit.MILLISECONDS.sleep(10);
-        }
-
-        Integer cashDeskAmount = 2;
-        Runnable consumer = new Consumer(bq, executor);
-        executor.execute(consumer);
-        executor.execute(consumer);
-        while(!bq.isEmpty()){
-            if(isAvailableQueeLength(cashDeskAmount, bq)){
-                cashDeskAmount++;
-                executor.execute(consumer);
-            }
+            executor.execute(consumer);
+            increaseWorkingDayTime(5);
         }
         shutDownExecutor(executor, bq);
-        while(!executor.isShutdown()){}
+        //while(!executor.isShutdown()) {}
+
         isFinished = true;
     }
 
     public boolean isAvailableQueeLength(int actualQueueLength, BlockingQueue<Customer> bq){
-        return (bq.size() / actualQueueLength) > _maxAmountOfCustomersInCashDeskQueue;
+        return actualQueueLength > 0 && (bq.size() / actualQueueLength) > _maxAmountOfCustomersInCashDeskQueue;
     }
 
     public void shutDownExecutor(ExecutorService executor, BlockingQueue<Customer> bq){
+        executor.shutdown();
         try{
+            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
             if(bq.size() > 0 ) {
                 System.out.printf("Customer queue is not empty.\n");
             } else {
@@ -74,8 +68,6 @@ public class SupermarketSimulation {
                 customer.returnProducts();
                 System.out.printf("Customer # %d returned all products and left the doors\n", customer.getId());
             }
-            executor.shutdown();
-            executor.awaitTermination(1, TimeUnit.MILLISECONDS);
         }
         catch (InterruptedException e) {
             System.err.println("tasks interrupted");
@@ -137,7 +129,7 @@ public class SupermarketSimulation {
         }
     }
 
-    public Report getReport() {
+    public Report getReport() throws InterruptedException {
         System.out.printf("Today came %-5s customers\n", _todayReport.getCustomersAmount());
         System.out.printf("Today`s profit is %.2f $\n", Rounder.round(_todayReport.getTodayProfit(), 2));
 
@@ -200,10 +192,10 @@ public class SupermarketSimulation {
     }
 
     private static String _startSupermarketTime = "6:00:00";
-    private static double _workingDayInHours = 2;
+    private static double _workingDayInHours = 1;
     private static double _workingPeriod = 0;
     private static Integer _maxAmountOfCustomers = 5;
-    private static Integer _maxAmountOfCustomersInCashDeskQueue = 10;
+    private static Integer _maxAmountOfCustomersInCashDeskQueue = 2;
     private Supermarket _supermarket;
 
     private static boolean isFinished = false;

@@ -20,28 +20,26 @@ public class Producer implements Runnable{
     public void run() {
 
         try {
-            synchronized (SupermarketSimulation._semaphoreProductListChanged) {
+            synchronized (SupermarketSimulation.gettodayReport().leftProductsList) {
                 Customer customer = SupermarketSimulation.EnterCustomer(SupermarketSimulation.gettodayReport().getCustomersAmount());
 
                 customer.getProducts();
+
                 if (!customer.getBasket().isEmpty()) {
                     System.out.printf("Customer `Customer %1s` had finished product choosing, now waiting at cash desk: %1s\n\n", customer.getId(), PrintService.getTimeAndUpdate());
                 } else {
                     System.out.printf("Customer `Customer %1s` hadn`t choose anything: %1s\n\n", customer.getId(), PrintService.getTimeAndUpdate());
                 }
 
-                queue.put(customer);
+                try {
+                    queue.put(customer);
+                } catch (InterruptedException e) {
+                    System.out.printf("Customer `Customer %1s` returned products \n", customer.getId());
+                    customer.returnProducts();
+                }
                 SupermarketSimulation.cleanProductList(SupermarketSimulation.gettodayReport().leftProductsList);
             }
-
-            synchronized (SupermarketSimulation._semaphoreTimeChanged)
-            {
-                SupermarketSimulation.increaseWorkingDayTime(5);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-            assert false;
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
