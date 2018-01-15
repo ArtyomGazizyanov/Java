@@ -32,8 +32,8 @@ public class SupermarketSimulation {
         final ExecutorService executor = Executors.newFixedThreadPool(_threadCapacity);
 
         Random randomAmountOfCustomers = new Random();
-        while(!SupermarketSimulation.IsWorkingDayEnd())
-        {
+        while(!SupermarketSimulation.IsWorkingDayEnd()) {
+
             Integer newCustomersAmount = randomAmountOfCustomers.nextInt(SupermarketSimulation.getMaxAmmountOfCustomers());
             System.out.println(newCustomersAmount + " Customers arriving at the doors!: " + PrintService.getTimeAndUpdate());
 
@@ -55,7 +55,6 @@ public class SupermarketSimulation {
             }
         }
         shutDownExecutor(executor, bq);
-        //сделать event у producer сщтыгьук
         while(!executor.isShutdown()){}
         isFinished = true;
     }
@@ -66,15 +65,24 @@ public class SupermarketSimulation {
 
     public void shutDownExecutor(ExecutorService executor, BlockingQueue<Customer> bq){
         try{
+            if(bq.size() > 0 ) {
+                System.out.printf("Customer queue is not empty.\n");
+            } else {
+                System.out.printf("Customer queue is empty.\n");
+            }
+            for (Customer customer : bq) {
+                customer.returnProducts();
+                System.out.printf("Customer # %d returned all products and left the doors\n", customer.getId());
+            }
             executor.shutdown();
-            executor.awaitTermination(100, TimeUnit.MILLISECONDS);
+            executor.awaitTermination(1, TimeUnit.MILLISECONDS);
         }
         catch (InterruptedException e) {
             System.err.println("tasks interrupted");
         }
         finally {
             if (!executor.isTerminated()) {
-                System.err.println("cancel non-finished tasks");
+                System.err.println("shutdown executor");
             }
             bq.clear();
             executor.shutdownNow();

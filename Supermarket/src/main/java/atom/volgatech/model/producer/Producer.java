@@ -20,24 +20,24 @@ public class Producer implements Runnable{
     public void run() {
 
         try {
-            SupermarketSimulation._semaphoreProductListChanged.acquire();
-            Customer customer = SupermarketSimulation.EnterCustomer(SupermarketSimulation.gettodayReport().getCustomersAmount());
+            synchronized (SupermarketSimulation._semaphoreProductListChanged) {
+                Customer customer = SupermarketSimulation.EnterCustomer(SupermarketSimulation.gettodayReport().getCustomersAmount());
 
-            customer.getProducts();
-            if(!customer.getBasket().isEmpty()){
-                System.out.printf("Customer `Customer %1s` had finished product choosing, now waiting at cash desk: %1s\n\n", customer.getId(), PrintService.getTimeAndUpdate());
-            } else {
-                System.out.printf("Customer `Customer %1s` hadn`t choose anything: %1s\n\n", customer.getId(), PrintService.getTimeAndUpdate());
+                customer.getProducts();
+                if (!customer.getBasket().isEmpty()) {
+                    System.out.printf("Customer `Customer %1s` had finished product choosing, now waiting at cash desk: %1s\n\n", customer.getId(), PrintService.getTimeAndUpdate());
+                } else {
+                    System.out.printf("Customer `Customer %1s` hadn`t choose anything: %1s\n\n", customer.getId(), PrintService.getTimeAndUpdate());
+                }
+
+                queue.put(customer);
+                SupermarketSimulation.cleanProductList(SupermarketSimulation.gettodayReport().leftProductsList);
             }
 
-            queue.put(customer);
-            SupermarketSimulation.cleanProductList(SupermarketSimulation.gettodayReport().leftProductsList);
-
-            SupermarketSimulation._semaphoreProductListChanged.release();
-
-            SupermarketSimulation._semaphoreTimeChanged.acquire();
-            SupermarketSimulation.increaseWorkingDayTime(5);
-            SupermarketSimulation._semaphoreTimeChanged.release();
+            synchronized (SupermarketSimulation._semaphoreTimeChanged)
+            {
+                SupermarketSimulation.increaseWorkingDayTime(5);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
             assert false;
@@ -45,43 +45,4 @@ public class Producer implements Runnable{
             e.printStackTrace();
         }
     }
-
-    /*public void run() {
-        Random randomAmountOfCustomers = new Random();
-        while(!SupermarketSimulation.IsWorkingDayEnd())
-        {
-            Integer newCustomersAmount = randomAmountOfCustomers.nextInt(SupermarketSimulation.getMaxAmmountOfCustomers());
-            System.out.println(newCustomersAmount + " Customers arriving at the doors!: " + PrintService.getTimeAndUpdate());
-
-            for(byte i = 0; i < newCustomersAmount; ++i) {
-
-                try {
-
-                    SupermarketSimulation._semaphoreProductListChanged.acquire();
-                    Customer customer = SupermarketSimulation.EnterCustomer(SupermarketSimulation.gettodayReport().getCustomersAmount());
-
-                    customer.getProducts();
-                    if(!customer.getBasket().isEmpty()){
-                        System.out.printf("Customer `Customer %1s` had finished product choosing, now waiting at cash desk: %1s\n\n", customer.getId(), PrintService.getTimeAndUpdate());
-                    } else {
-                        System.out.printf("Customer `Customer %1s` hadn`t choose anything: %1s\n\n", customer.getId(), PrintService.getTimeAndUpdate());
-                    }
-
-                    queue.put(customer);
-                    SupermarketSimulation.cleanProductList(SupermarketSimulation.gettodayReport().leftProductsList);
-
-                    SupermarketSimulation._semaphoreProductListChanged.release();
-
-                    SupermarketSimulation._semaphoreTimeChanged.acquire();
-                    SupermarketSimulation.increaseWorkingDayTime(5);
-                    SupermarketSimulation._semaphoreTimeChanged.release();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    assert false;
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }*/
 }

@@ -5,6 +5,7 @@ import atom.volgatech.model.helper.PrintService;
 import atom.volgatech.model.product.Product;
 import atom.volgatech.model.supermarket.ShopAssistant;
 import atom.volgatech.model.basket.Basket;
+import javafx.util.Pair;
 
 import java.util.*;
 
@@ -82,6 +83,18 @@ public class Customer implements CustomerInterfce {
         }
 
         return boughtProductAmount;
+    }
+
+    public int returnProducts() {
+        for(Map.Entry<Product, Integer> entry : _basket.getGroceryList().entrySet()) {
+            if(_goodsStock.containsKey(entry.getKey())) {
+                _goodsStock.put(entry.getKey(),_goodsStock.get(entry.getKey()) +  entry.getValue());
+            } else {
+                _goodsStock.put(entry.getKey(), entry.getValue());
+            }
+        }
+        _basket.getGroceryList().clear();
+        return 0;
     }
 
     private int _maxAmountOfProduts = 10;
